@@ -1,0 +1,24 @@
+test-mongo:
+  image: mongo:4.0.4
+  ports:
+   - 27017:27017
+
+seed:
+  image: mongo:4.0.4
+  links:
+    - test-mongo
+  volumes: 
+    - ./seed:/seed
+  command:
+    /seed/import.sh
+
+web-app:
+  build: ./web/
+  command: npm run start
+  volumes:
+    - ./web/:/usr/app/
+    - /usr/app/node_modules
+  ports:
+    - "8080:8080"
+  links:
+    - test-mongo
